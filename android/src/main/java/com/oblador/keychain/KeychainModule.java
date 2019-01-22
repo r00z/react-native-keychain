@@ -43,8 +43,8 @@ public class KeychainModule extends ReactContextBaseJavaModule implements Activi
     public static final String KEYCHAIN_MODULE = "RNKeychainManager";
     public static final String FINGERPRINT_SUPPORTED_NAME = "Fingerprint";
     public static final String EMPTY_STRING = "";
-    public static final int REQUEST_CODE_CONFIRM_DEVICE_CREDENTIALS_SET = 9999931;
-    public static final int REQUEST_CODE_CONFIRM_DEVICE_CREDENTIALS_GET = 9999932;
+    public static final int REQUEST_CODE_CONFIRM_DEVICE_CREDENTIALS_SET = 9931;
+    public static final int REQUEST_CODE_CONFIRM_DEVICE_CREDENTIALS_GET = 9932;
 
     private final Map<String, CipherStorage> cipherStorageMap = new HashMap<>();
     private final PrefsStorage prefsStorage;
@@ -226,6 +226,20 @@ public class KeychainModule extends ReactContextBaseJavaModule implements Activi
     }
 
     @ReactMethod
+    public void hasInternetCredentialsForServer(@NonNull String server, Promise promise) {
+        final String defaultService = getDefaultServiceIfNull(server);
+
+        ResultSet resultSet = prefsStorage.getEncryptedEntry(defaultService);
+        if (resultSet == null) {
+            Log.e(KEYCHAIN_MODULE, "No entry found for service: " + defaultService);
+            promise.resolve(false);
+            return;
+        }
+
+        promise.resolve(true);
+    }
+
+    @ReactMethod
     public void setInternetCredentialsForServer(@NonNull String server, String username, String password, ReadableMap unusedOptions, Promise promise) {
         setGenericPasswordForOptions(server, username, password, promise);
     }
@@ -279,7 +293,7 @@ public class KeychainModule extends ReactContextBaseJavaModule implements Activi
     }
 
     private boolean isFingerprintAuthAvailable() {
-        return DeviceAvailability.isFingerprintAuthAvailable(getCurrentActivity());
+        return DeviceAvailability.isFingerprintAuthAvailable(getReactApplicationContext());
     }
 
     private boolean isSecure() {
