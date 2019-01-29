@@ -297,7 +297,7 @@ public class KeychainModule extends ReactContextBaseJavaModule implements Activi
     }
 
     private boolean isSecure() {
-      return DeviceAvailability.isSecure(getCurrentActivity());
+      return DeviceAvailability.isDeviceSecure(getCurrentActivity());
     }
 
   @NonNull
