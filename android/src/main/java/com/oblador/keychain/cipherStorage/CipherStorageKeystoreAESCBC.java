@@ -123,6 +123,8 @@ public class CipherStorageKeystoreAESCBC implements CipherStorage {
             throw new CryptoFailedException("Could not get key from Keystore", e);
         } catch (KeyStoreAccessException e) {
             throw new CryptoFailedException("Could not access Keystore", e);
+        } catch (RequiresAuthenticationException e) {
+          throw e;
         } catch (Exception e) {
             throw new CryptoFailedException("Unknown error: " + e.getMessage(), e);
         }
